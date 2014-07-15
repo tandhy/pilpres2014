@@ -24,7 +24,7 @@ import random
 # set save path. 
 savePath = "f:/workspace/pilpres2014"
 # set this variable to show each form c1 filename after saved into computer
-showSavedFilename = False
+showSavedFilename = True
 
 # variable
 propinsi = []
