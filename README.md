@@ -1,6 +1,6 @@
 pilpres2014
 ===========
-python based code to download C1 form to support transparancy of Indonesia Presidential election.<br>
+python based code to download C1 form to support transparency of Indonesia Presidential election.<br>
 <br>
 <br>
 How to use :<br>
