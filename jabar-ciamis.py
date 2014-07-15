@@ -68,7 +68,7 @@ for option in optionTag:
 
 
 # add time interval
-time.sleep(random.randint(8,15)) # random sleep time between 8 - 15 second
+time.sleep(random.randint(3,5)) # random sleep time between 8 - 15 second
 
 # get kelurahan/desa kode per kecamatan
 for kec in kecamatan:
@@ -92,7 +92,7 @@ for kec in kecamatan:
 			info = {'kode': option.get('value'), 'nama' : option.string }
 			kelurahan.append(info)
 
-	time.sleep(random.randint(8,15)) # random sleep time between 8 - 15 second
+	time.sleep(random.randint(3,5)) # random sleep time between 3 - 5 second
 
 	# get tps from each kelurahan
 	for kel in kelurahan:
@@ -152,7 +152,7 @@ for kec in kecamatan:
 
 				print "\t\t\t\t%s -> tps%s-%s-%s.jpg" % (url, int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i])
 				saveFile.close()
-				time.sleep(random.randint(3,10)) # random sleep time between 8 - 15 second
+				time.sleep(random.randint(3,5)) # random sleep time between 3 - 5 second
 
 		print "\t\t\t\tTotal TPS = %d ; total form C1 = %d\n" % ( len(tpsKode), len(aList))
 
