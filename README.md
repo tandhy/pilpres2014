@@ -3,26 +3,28 @@ pilpres2014
 
 python based code to download C1 form to support transparancy of Indonesia President election.
 
-How to use :
-1. Determine your Operating System, either Windows, Mac OS X or Linux/*nix.
-2. Download python 2.7.x for your OS, not 3.x !
-<a href="https://www.python.org/ftp/python/2.7.8/python-2.7.8.msi">Python for windows</a>, <a href="https://www.python.org/download/releases/2.7.8/">Python for Mac OS X</a>, <a href="https://www.python.org/download/releases/2.7.8/">Python for Linux/*nix</a>
-3. Setup environment for Python : <a href="http://docs.python-guide.org/en/latest/starting/install/win/">instruction</a> or here are the summaries for windows OS :
-	a. Install the downloaded installer by double click the installer file. The file should look like this : python-2.7.8.msi.
-	b. follow on-screen instruction, use the default configuration.
-	c. open your command prompt by : hit [window button]+R at the same time. A RUN dialog box will appears, type 'cmd' and hit ENTER.
-	d. command prompt dialog box will appears.
-	e. type the following : [Environment]::SetEnvironmentVariable("Path", "$env:Path;C:\Python27\;C:\Python27\Scripts\", "User")
-	f. type 'python' and hit ENTER. if you see the following output that mean you have successfully install python. Yeaayy! Now you can go to step h.
-	"	Python 2.7.6 (default, Nov 10 2013, 19:24:18) [MSC v.1500 32 bit (Intel)] on win32
-		Type "help", "copyright", "credits" or "license" for more information.
-		>>>
-	"
-	If you do not see that message, do not be scare, we could use another way to run the script.
-	g. if you do not see that message, make sure that you have to go to python directory in order to run PYTHON. here's how to do it: in command prompt, type 'cd c:\python27\'. if you prompt look like : "c:\Python27>", then you are on the right track, otherwise, make sure python27 is the same directory which you entered in the installation proccess.
-	h. download these files and save it to your python directory : 
-		1. <a href="https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py">ez_setup.py</a>
-		2. <a href="https://raw.github.com/pypa/pip/master/contrib/get-pip.py">get-pip.py</a>
+How to use :<br>
+1. Determine your Operating System, either Windows, Mac OS X or Linux/*nix.<br>
+2. Download python 2.7.x for your OS, not 3.x !<br>
+<a href="https://www.python.org/ftp/python/2.7.8/python-2.7.8.msi">Python for windows</a><br>
+<a href="https://www.python.org/download/releases/2.7.8/">Python for Mac OS X</a><br>
+<a href="https://www.python.org/download/releases/2.7.8/">Python for Linux/*nix</a><br>
+3. Setup environment for Python : <a href="http://docs.python-guide.org/en/latest/starting/install/win/">instruction</a> or here are the summaries for windows OS :<br>
+	a. Install the downloaded installer by double click the installer file. The file should look like this : python-2.7.8.msi.<br>
+	b. follow on-screen instruction, use the default configuration.<br>
+	c. open your command prompt by : hit [window button]+R at the same time. A RUN dialog box will appears, type 'cmd' and hit ENTER.<br>
+	d. command prompt dialog box will appears.<br>
+	e. type the following : [Environment]::SetEnvironmentVariable("Path", "$env:Path;C:\Python27\;C:\Python27\Scripts\", "User")<br>
+	f. type 'python' and hit ENTER. if you see the following output that mean you have successfully install python. Yeaayy! Now you can go to step h.<br>
+	Python 2.7.6 (default, Nov 10 2013, 19:24:18) [MSC v.1500 32 bit (Intel)] on win32<br>
+	Type "help", "copyright", "credits" or "license" for more information.<br>
+	>>><br>
+	<br>
+	If you do not see that message, do not be scare, we could use another way to run the script.<br>
+	g. if you do not see that message, make sure that you have to go to python directory in order to run PYTHON. here's how to do it: in command prompt, type 'cd c:\python27\'. if you prompt look like : "c:\Python27>", then you are on the right track, otherwise, make sure python27 is the same directory which you entered in the installation proccess.<br>
+	h. download these files and save it to your python directory : <br>
+		1. <a href="https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py">ez_setup.py</a><br>
+		2. <a href="https://raw.github.com/pypa/pip/master/contrib/get-pip.py">get-pip.py</a><br>
 
 		run these file in your current directory or "c:\Python27\" :
 		1. type 'python ez_setup.py' and hit ENTER
