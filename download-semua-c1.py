@@ -77,6 +77,7 @@ for prop in propinsi:
 	# fetch <option>
 	htmlFile = BeautifulSoup(buffer.getvalue())
 	optionTag = htmlFile.find_all('option')
+	kabupaten = []
 	for option in optionTag:
 		if(option.string != 'pilih'):
 			# store <option> value into dict
@@ -108,6 +109,7 @@ for prop in propinsi:
 		# fetch <option>
 		htmlFile = BeautifulSoup(buffer.getvalue())
 		optionTag = htmlFile.find_all('option')
+		kecamatan = []
 		for option in optionTag:
 			if(option.string != 'pilih'):
 				# store <option> value into dict
@@ -137,6 +139,7 @@ for prop in propinsi:
 			# fetch <option>
 			htmlFile = BeautifulSoup(buffer.getvalue())
 			optionTag = htmlFile.find_all('option')
+			kelurahan = []
 			for option in optionTag:
 				if(option.string != 'pilih'):
 					# store <option> value into dict

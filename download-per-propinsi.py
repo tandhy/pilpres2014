@@ -96,7 +96,9 @@ else:
 
 	# fetch <option>
 	htmlFile = BeautifulSoup(buffer.getvalue())
+	optionTag = ''
 	optionTag = htmlFile.find_all('option')
+	kabupaten = []
 	for option in optionTag:
 		if(option.string != 'pilih'):
 			# store <option> value into dict
@@ -127,7 +129,9 @@ else:
 
 		# fetch <option>
 		htmlFile = BeautifulSoup(buffer.getvalue())
+		optionTag = ''
 		optionTag = htmlFile.find_all('option')
+		kecamatan = []
 		for option in optionTag:
 			if(option.string != 'pilih'):
 				# store <option> value into dict
@@ -156,7 +160,9 @@ else:
 			
 			# fetch <option>
 			htmlFile = BeautifulSoup(buffer.getvalue())
+			optionTag = ''
 			optionTag = htmlFile.find_all('option')
+			kelurahan = []
 			for option in optionTag:
 				if(option.string != 'pilih'):
 					# store <option> value into dict
@@ -188,6 +194,7 @@ else:
 
 				# fetch <td> to get tps code
 				htmlFile = BeautifulSoup(buffer.getvalue())
+				tdTag = ''
 				tdTag = htmlFile.find_all('td')
 				tpsKode = []
 				for td in tdTag:
@@ -196,6 +203,7 @@ else:
 							tpsKode.append(td.string)
 
 				# fetch <a> to get link to the image
+				aTag =''
 				aTag = htmlFile.find_all('a')
 				aList = []
 				for a in aTag:

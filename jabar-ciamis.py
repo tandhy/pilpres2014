@@ -73,6 +73,7 @@ time.sleep(random.randint(3,5)) # random sleep time between 8 - 15 second
 # get kelurahan/desa kode per kecamatan
 for kec in kecamatan:
 	print "\t\tKecamatan : %s" %(kec['nama'])
+	kecamatan = []
 
 	c = pycurl.Curl()
 	buffer = StringIO()
@@ -87,6 +88,7 @@ for kec in kecamatan:
 	# buat tree, dan ambil nilai <option>
 	htmlFile = BeautifulSoup(buffer.getvalue())
 	optionTag = htmlFile.find_all('option')
+	kelurahan = []
 	for option in optionTag:
 		if(option.string != 'pilih'):
 			info = {'kode': option.get('value'), 'nama' : option.string }
