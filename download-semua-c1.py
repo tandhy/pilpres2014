@@ -203,7 +203,7 @@ for prop in propinsi:
 							print "\t\t\t\t%s -> %s" % (url, filename)
 						
 						saveFile.close()
-						time.sleep(random.randint(3,5)) # random sleep time between 3 - 5 second'''
+						time.sleep(random.randint(3,5)) # random sleep time between 3 - 5 second
 
 				print "\t\t\t\tTotal TPS = %d ; total form C1 = %d\n" % ( len(tpsKode), len(aList))
 
