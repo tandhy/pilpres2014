@@ -1,6 +1,6 @@
 '''
 	Author : Tandhy Simanjuntak / July 15th, 2014
-	Purpose : To download all c1 form from pilpres2014.kpu.go.id
+	Purpose : To download all c1 form per province from pilpres2014.kpu.go.id
 '''
 # cURL operation
 import pycurl
@@ -25,6 +25,8 @@ import random
 savePath = "f:/temp/pilpres2014"
 # set this variable to show each form c1 filename after saved into computer
 showSavedFilename = True
+
+
 
 # variable
 prop = []
@@ -72,11 +74,44 @@ prop = {'kode': '60371', 'nama': 'KALIMANTAN TENGAH'}
 #prop = {'kode': '78203', 'nama': 'PAPUA'}
 #prop = {'kode': '81877', 'nama': 'PAPUA BARAT'}
 
+# open a log file
+# set path for log
+logPath = savePath + "/log"
+logFilename = logPath + "/" + prop['nama'] + "-" + prop['kode'] + "-" + time.strftime("%Y%m%d-%H%M%S") + ".txt"
+# check for log file
+if not os.path.exists(logPath):
+    os.makedirs(logPath)
+
+openLogFile = open(logFilename, 'w')
+openLogFile.write("Generated : "  + time.strftime("%m.%d.%Y %H:%M:%S") + "\n" )
+openLogFile.write("========================================\n")
+
+# store ID 
+IDFilename = savePath + "/id-%s.txt" % (prop['kode'])
+
+# check if file exists
+if not (os.path.exists(IDFilename)):
+	openIDFile = open( IDFilename, 'w') # rewrite existing file
+	openIDFile.write("%s\n" % (prop['kode']) )
+	listReadIDFile = ''
+else:
+	openIDFile = open (IDFilename, 'a')
+	readIDFile = open (IDFilename,'r')
+	listReadIDFile = readIDFile.read()
+
+
+
+
 # iterate each propinsi
 if (len(prop) == 0):
 	print "You have to choose which propinsi you want to download"
 else:
 	print "Propinsi : %s" %(prop['nama'])
+
+	openLogFile.write( "Propinsi : %s (%s)\n" %(prop['nama'] , prop['kode']) )
+	if prop['kode'] not in listReadIDFile:
+		openIDFile.write("%s\n" % (prop['kode']) )
+
 	# set folder path
 	propinsiFolder = savePath + "/" + prop['nama']
 	# create a folder if it does not exists
@@ -112,6 +147,11 @@ else:
 	# iterate each kabupaten
 	for kab in kabupaten:
 		print "\tKabupaten : %s" %(kab['nama'])
+		
+		openLogFile.write( "\tKabupaten : %s (%s)\n" %(kab['nama'] , kab['kode']) )
+		if kab['kode'] not in listReadIDFile:
+			openIDFile.write("%s\n" % (kab['kode']) )
+
 		# set folder path
 		kabupatenFolder = propinsiFolder + "/" + kab['nama']
 		# create a folder if it does not exists
@@ -144,6 +184,11 @@ else:
 		# iterate each kecamatan
 		for kec in kecamatan:
 			print "\t\tKecamatan : %s" %(kec['nama'])
+
+			openLogFile.write( "\t\tKecamatan : %s (%s)\n" %(kec['nama'], kec['kode']) )
+			if kec['kode'] not in listReadIDFile:
+				openIDFile.write("%s\n" % (kec['kode']) )
+
 			# set folder path
 			kecamatanFolder = kabupatenFolder + "/" + kec['nama']
 			# create a folder if it does not exists
@@ -177,70 +222,91 @@ else:
 
 			# iterate each kelurahan
 			for kel in kelurahan:
-				print "\t\t\tKelurahan : %s" %(kel['nama'])
-				# set folder path
-				kelurahanFolder = kecamatanFolder + "/" + kel['nama']
-				# create a folder if it does not exists
-				if not (os.path.exists(kelurahanFolder)):
-					os.makedirs(kelurahanFolder)
+				# check if kelurahan has been downloaded or not in the IDFilename
+				if kel['kode'] not in listReadIDFile:
+					print "\t\t\tKelurahan : %s" %(kel['nama'])
 
-				
-				c = pycurl.Curl()
-				buffer = StringIO()
-				url = 'http://pilpres2014.kpu.go.id/c1.php?cmd=select&grandparent=%s&parent=%s' % (kec['kode'], kel['kode'])
-				post_data = {'wilayah_id': kel['kode']}
-				postfields = urlencode(post_data)
-				c.setopt(c.URL,url)
-				c.setopt(c.CONNECTTIMEOUT,999)
-				c.setopt(c.POSTFIELDS, postfields)
-				c.setopt(c.WRITEDATA, buffer)
-				c.perform()
+					openLogFile.write( "\t\t\tKelurahan : %s (%s)\n" %(kel['nama'], kel['kode']) )
 
-				# fetch <td> to get tps code
-				htmlFile = BeautifulSoup(buffer.getvalue())
-				tdTag = ''
-				tdTag = htmlFile.find_all('td')
-				tpsKode = []
-				for td in tdTag:
-					if(td.string != None) and (td.string != 'unduh'):
-						if(len(td.string) > 2 ):
-							tpsKode.append(td.string)
+					# set folder path
+					kelurahanFolder = kecamatanFolder + "/" + kel['nama']
+					# create a folder if it does not exists
+					if not (os.path.exists(kelurahanFolder)):
+						os.makedirs(kelurahanFolder)
 
-				# fetch <a> to get link to the image
-				aTag =''
-				aTag = htmlFile.find_all('a')
-				aList = []
-				for a in aTag:
-					if(a.get('href').find("javascript:read_jpg") != -1):
-						aList.append(a.get('href').strip("javascript:read_jpg('").strip("')"))
-
-
-				noTps = 0
-				for i in range(0,len(aList), 1):
-					# file format : tpsx-tpsKode-[12digit].jpg -> tps1-xxxxxx-xxxxxxxxxxxx.jpg
-
-					filename = kelurahanFolder + "/" + 'tps%s-%s-%s.jpg' % (int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i])
-					# do not download existing filename
-					if not (os.path.exists(filename)):
-						c = pycurl.Curl()
-						buffer = StringIO()
-						url = 'http://scanc1.kpu.go.id/viewp.php?f=%s.jpg' % (aList[i])
-						c.setopt(c.URL, url)
+					
+					c = pycurl.Curl()
+					buffer = StringIO()
+					url = 'http://pilpres2014.kpu.go.id/c1.php?cmd=select&grandparent=%s&parent=%s' % (kec['kode'], kel['kode'])
+					post_data = {'wilayah_id': kel['kode']}
+					postfields = urlencode(post_data)
+					c.setopt(c.URL,url)
 					c.setopt(c.CONNECTTIMEOUT,999)
-						saveFile = open(filename,'wb')
-						# save received data into filename
-						c.setopt(c.WRITEDATA, saveFile)
-						c.perform()
+					c.setopt(c.POSTFIELDS, postfields)
+					c.setopt(c.WRITEDATA, buffer)
+					c.perform()
 
-						if (showSavedFilename):
-							print "\t\t\t\t%s -> %s" % (url, filename)
-						
-						saveFile.close()
-						time.sleep(random.randint(3,5)) # random sleep time between 3 - 5 second
+					# fetch <td> to get tps code
+					htmlFile = BeautifulSoup(buffer.getvalue())
+					tdTag = ''
+					tdTag = htmlFile.find_all('td')
+					tpsKode = []
+					for td in tdTag:
+						if(td.string != None) and (td.string != 'unduh'):
+							if(len(td.string) > 2 ):
+								tpsKode.append(td.string)
 
-				print "\t\t\t\tTotal TPS = %d ; total form C1 = %d\n" % ( len(tpsKode), len(aList))
+					# fetch <a> to get link to the image
+					aTag =''
+					aTag = htmlFile.find_all('a')
+					aList = []
+					for a in aTag:
+						if(a.get('href').find("javascript:read_jpg") != -1):
+							aList.append(a.get('href').strip("javascript:read_jpg('").strip("')"))
+
+
+					noTps = 0
+					for i in range(0,len(aList), 1):
+						# file format : tpsx-tpsKode-[12digit].jpg -> tps1-xxxxxx-xxxxxxxxxxxx.jpg
+
+						filename = kelurahanFolder + "/" + 'tps%s-%s-%s.jpg' % (int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i])
+						# do not download existing filename
+						if not (os.path.exists(filename)):
+							c = pycurl.Curl()
+							buffer = StringIO()
+							url = 'http://scanc1.kpu.go.id/viewp.php?f=%s.jpg' % (aList[i])
+							c.setopt(c.URL, url)
+							c.setopt(c.CONNECTTIMEOUT,999)
+							saveFile = open(filename,'wb')
+							# save received data into filename
+							c.setopt(c.WRITEDATA, saveFile)
+							c.perform()
+
+							if (showSavedFilename):
+								print "\t\t\t\t%s -> tps%s-%s-%s.jpg" % (url, int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i] )
+
+							openLogFile.write( "\t\t\t\t%s -> tps%s-%s-%s.jpg\n" % (url, int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i]) )
+							
+							saveFile.close()
+							time.sleep(random.randint(3,5)) # random sleep time between 3 - 5 second
+						else:
+							# file has been downloaded
+							print "\t\t\t\tDone -> tps%s-%s-%s.jpg" % ( int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i] )
+							openLogFile.write( "\t\t\t\tDone -> tps%s-%s-%s.jpg\n" % ( int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i] ) )
+
+					print "\t\t\t\tTotal TPS = %d ; total form C1 = %d\n" % ( len(tpsKode), len(aList))
+					openLogFile.write( "\t\t\t\tTotal TPS = %d ; total form C1 = %d\n" % ( len(tpsKode), len(aList)) )
+					openIDFile.write("%s\n" % (kel['kode']) )
+
+				else:
+					print "\t\t\tKelurahan : %s --> done" %(kel['nama'])
+					openLogFile.write( "\t\t\tKelurahan : %s --> done\n" %(kel['nama']) )
 
 			# separator between kecamatan
 			print "----------------------------------------------------------------"
+			openLogFile.write( "------------------------------------------------------------------------------\n" )
 
+	# close c instance
 	c.close()
+	# close openLogFile instance
+	openLogFile.close()

@@ -20,12 +20,6 @@ import random
 
 # set save path.
 savePath = "f:/workspace/pilpres2014"
-# set path for log
-logPath = savePath + "/log"
-logFilename = logPath + "/jabar-ciamis-" + time.strftime("%Y%m%d-%H%M%S") + ".txt"
-# check for log file
-if not os.path.exists(logPath):
-    os.makedirs(logPath)
 
 # set Prov code and name to download specific C1 form.
 Prov = {'kode':'26141', 'nama':'Jawa Barat'} # Propinsi Jawa Barat
@@ -36,11 +30,32 @@ kecamatan = []
 kelurahan = []
 
 # open a log file
+# set path for log
+logPath = savePath + "/log"
+logFilename = logPath + "/jabar-ciamis-" + time.strftime("%Y%m%d-%H%M%S") + ".txt"
+# check for log file
+if not os.path.exists(logPath):
+    os.makedirs(logPath)
+
 openLogFile = open(logFilename, 'w')
 openLogFile.write("Generated : "  + time.strftime("%m.%d.%Y %H:%M:%S") + "\n" )
 openLogFile.write("========================================\n")
-openLogFile.write("Propinsi : %s\n" % (Prov['nama']) )
-openLogFile.write("\tKabupaten : %s\n" % (Kab['nama']) )
+openLogFile.write("Propinsi : %s (%s)\n" % (Prov['nama'] , Prov['kode'] ) )
+openLogFile.write("\tKabupaten : %s (%s)\n" % ( Kab['nama'] , Kab['kode'] ) )
+
+# store ID 
+IDFilename = savePath + "/%s-%s.txt" % (Prov['kode'] , Kab['kode'])
+
+# check if file exists
+if not (os.path.exists(IDFilename)):
+	openIDFile = open( IDFilename, 'w') # rewrite existing file
+	openIDFile.write("%s\n" % (Prov['kode']) )
+	openIDFile.write("%s\n" % (Kab['kode']) )
+	listReadIDFile = ''
+else:
+	openIDFile = open (IDFilename, 'a')
+	readIDFile = open (IDFilename,'r')
+	listReadIDFile = readIDFile.read()
 
 
 # format file c1: tpsKode-[12digit].jpg
@@ -90,7 +105,10 @@ time.sleep(random.randint(3,5)) # random sleep time between 8 - 15 second
 for kec in kecamatan:
 	print "\t\tKecamatan : %s" %(kec['nama'])
 	# write to log file
-	openLogFile.write( "\t\tKecamatan : %s\n" %(kec['nama']) )
+	openLogFile.write( "\t\tKecamatan : %s (%s)\n" %(kec['nama'] , kec['kode']) )
+	if kec['kode'] not in listReadIDFile:
+		openIDFile.write("%s\n" % (kec['kode']) )
+
 	kecamatan = []
 
 	c = pycurl.Curl()
@@ -117,73 +135,84 @@ for kec in kecamatan:
 
 	# get tps from each kelurahan
 	for kel in kelurahan:
-		print "\t\t\tKelurahan : %s" %(kel['nama'])
-		# write to log file
-		openLogFile.write( "\t\t\tKelurahan : %s\n" %(kel['nama']) )
-		# create folder for kecamatan
-		kecamatanFolder = kabupatenFolder + "/" + kec['nama']
-		if not (os.path.exists(kecamatanFolder)):
-			os.makedirs(kecamatanFolder)
+		# check if kelurahan has been downloaded or not in the IDFilename
+		if kel['kode'] not in listReadIDFile:
+			print "\t\t\tKelurahan : %s" %(kel['nama'])
+			# write to log file
+			openLogFile.write( "\t\t\tKelurahan : %s (%s)\n" %(kel['nama'], kel['kode']) )
+			# create folder for kecamatan
+			kecamatanFolder = kabupatenFolder + "/" + kec['nama']
+			if not (os.path.exists(kecamatanFolder)):
+				os.makedirs(kecamatanFolder)
 
-		
-		c = pycurl.Curl()
-		buffer = StringIO()
-		url = 'http://pilpres2014.kpu.go.id/c1.php?cmd=select&grandparent=%s&parent=%s' % (kec['kode'], kel['kode'])
-		post_data = {'wilayah_id': kel['kode']}
-		postfields = urlencode(post_data)
-		c.setopt(c.URL,url)
-		c.setopt(c.POSTFIELDS, postfields)
-		c.setopt(c.CONNECTTIMEOUT,999)
-		c.setopt(c.WRITEDATA, buffer)
-		c.perform()
+			
+			c = pycurl.Curl()
+			buffer = StringIO()
+			url = 'http://pilpres2014.kpu.go.id/c1.php?cmd=select&grandparent=%s&parent=%s' % (kec['kode'], kel['kode'])
+			post_data = {'wilayah_id': kel['kode']}
+			postfields = urlencode(post_data)
+			c.setopt(c.URL,url)
+			c.setopt(c.POSTFIELDS, postfields)
+			c.setopt(c.CONNECTTIMEOUT,999)
+			c.setopt(c.WRITEDATA, buffer)
+			c.perform()
 
-		# buat tree, dan ambil nilai <td> untuk tps
-		htmlFile = BeautifulSoup(buffer.getvalue())
-		tdTag = htmlFile.find_all('td')
-		tpsKode = []
-		for td in tdTag:
-			if(td.string != None) and (td.string != 'unduh'):
-				if(len(td.string) > 2 ):
-					tpsKode.append(td.string)
+			# buat tree, dan ambil nilai <td> untuk tps
+			htmlFile = BeautifulSoup(buffer.getvalue())
+			tdTag = htmlFile.find_all('td')
+			tpsKode = []
+			for td in tdTag:
+				if(td.string != None) and (td.string != 'unduh'):
+					if(len(td.string) > 2 ):
+						tpsKode.append(td.string)
 
-		aTag = htmlFile.find_all('a')
-		aList = []
-		for a in aTag:
-			if(a.get('href').find("javascript:read_jpg") != -1):
-				aList.append(a.get('href').strip("javascript:read_jpg('").strip("')"))
+			aTag = htmlFile.find_all('a')
+			aList = []
+			for a in aTag:
+				if(a.get('href').find("javascript:read_jpg") != -1):
+					aList.append(a.get('href').strip("javascript:read_jpg('").strip("')"))
 
 
-		noTps = 0
-		for i in range(0,len(aList), 1):
-			# download image menggunakan curl dan save dengan format tpsKode-[12digit].jpg
-			# buat folder dan sub folder apabila diperlukan
+			noTps = 0
+			for i in range(0,len(aList), 1):
+				# download image menggunakan curl dan save dengan format tpsKode-[12digit].jpg
+				# buat folder dan sub folder apabila diperlukan
 
-			# create folder for kelurahan
-			kelurahanFolder = kecamatanFolder + "/" + kel['nama']
-			if not (os.path.exists(kelurahanFolder)):
-				os.makedirs(kelurahanFolder)
+				# create folder for kelurahan
+				kelurahanFolder = kecamatanFolder + "/" + kel['nama']
+				if not (os.path.exists(kelurahanFolder)):
+					os.makedirs(kelurahanFolder)
 
-			filename = kelurahanFolder + "/" + 'tps%s-%s-%s.jpg' % (int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i])
-			# do not download existing filename
-			if not (os.path.exists(filename)):
-				c = pycurl.Curl()
-				buffer = StringIO()
-				url = 'http://scanc1.kpu.go.id/viewp.php?f=%s.jpg' % (aList[i])
-				c.setopt(c.URL, url)
-				c.setopt(c.CONNECTTIMEOUT,999)
-				saveFile = open(filename,'wb')
-				c.setopt(c.WRITEDATA, saveFile)
-				c.perform()
+				filename = kelurahanFolder + "/" + 'tps%s-%s-%s.jpg' % (int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i])
+				# do not download existing filename
+				if not (os.path.exists(filename)):
+					c = pycurl.Curl()
+					buffer = StringIO()
+					url = 'http://scanc1.kpu.go.id/viewp.php?f=%s.jpg' % (aList[i])
+					c.setopt(c.URL, url)
+					c.setopt(c.CONNECTTIMEOUT,999)
+					saveFile = open(filename,'wb')
+					c.setopt(c.WRITEDATA, saveFile)
+					c.perform()
 
-				print "\t\t\t\t%s -> tps%s-%s-%s.jpg" % (url, int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i])
-				# write to log file
-				openLogFile.write( "\t\t\t\t%s -> tps%s-%s-%s.jpg" % (url, int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i]) )
-				# close saveFile
-				saveFile.close()
-				time.sleep(random.randint(3,5)) # random sleep time between 3 - 5 second
+					print "\t\t\t\t%s -> tps%s-%s-%s.jpg" % (url, int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i])
+					# write to log file
+					openLogFile.write( "\t\t\t\t%s -> tps%s-%s-%s.jpg" % (url, int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i]) )
+					# close saveFile
+					saveFile.close()
+					time.sleep(random.randint(3,5)) # random sleep time between 3 - 5 second
+				else:
+					# file has been downloaded
+					print "\t\t\t\tDone -> tps%s-%s-%s.jpg" % ( int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i] )
+					openLogFile.write( "\t\t\t\tDone -> tps%s-%s-%s.jpg" % ( int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i] ) )
 
-		print "\t\t\t\tTotal TPS = %d ; total form C1 = %d\n" % ( len(tpsKode), len(aList))
-		openLogFile.write( "\t\t\t\tTotal TPS = %d ; total form C1 = %d\n" % ( len(tpsKode), len(aList)) )
+
+			print "\t\t\t\tTotal TPS = %d ; total form C1 = %d\n" % ( len(tpsKode), len(aList))
+			openLogFile.write( "\t\t\t\tTotal TPS = %d ; total form C1 = %d\n" % ( len(tpsKode), len(aList)) )
+			openIDFile.write("%s\n" % (kel['kode']) )
+		else:
+			print "\t\t\tKelurahan : %s --> done" %(kel['nama'])
+			openLogFile.write( "\t\t\tKelurahan : %s --> done" %(kel['nama']) )
 
 	print "------------------------------------------------------------------------------"
 	openLogFile.write( "------------------------------------------------------------------------------\n" )
