@@ -91,6 +91,7 @@ else:
 	postfields = urlencode(post_data)
 	c.setopt(c.URL,url)
 	c.setopt(c.POSTFIELDS, postfields)
+	c.setopt(c.CONNECTTIMEOUT,999)
 	c.setopt(c.WRITEDATA, buffer)
 	c.perform()
 
@@ -124,6 +125,7 @@ else:
 		postfields = urlencode(post_data)
 		c.setopt(c.URL,url)
 		c.setopt(c.POSTFIELDS, postfields)
+		c.setopt(c.CONNECTTIMEOUT,999)
 		c.setopt(c.WRITEDATA, buffer)
 		c.perform()
 
@@ -155,6 +157,7 @@ else:
 			postfields = urlencode(post_data)
 			c.setopt(c.URL,url)
 			c.setopt(c.POSTFIELDS, postfields)
+			c.setopt(c.CONNECTTIMEOUT,999)
 			c.setopt(c.WRITEDATA, buffer)
 			c.perform()
 			
@@ -188,6 +191,7 @@ else:
 				post_data = {'wilayah_id': kel['kode']}
 				postfields = urlencode(post_data)
 				c.setopt(c.URL,url)
+				c.setopt(c.CONNECTTIMEOUT,999)
 				c.setopt(c.POSTFIELDS, postfields)
 				c.setopt(c.WRITEDATA, buffer)
 				c.perform()
@@ -222,6 +226,7 @@ else:
 						buffer = StringIO()
 						url = 'http://scanc1.kpu.go.id/viewp.php?f=%s.jpg' % (aList[i])
 						c.setopt(c.URL, url)
+					c.setopt(c.CONNECTTIMEOUT,999)
 						saveFile = open(filename,'wb')
 						# save received data into filename
 						c.setopt(c.WRITEDATA, saveFile)

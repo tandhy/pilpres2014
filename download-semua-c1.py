@@ -42,6 +42,7 @@ buffer = StringIO()
 url = 'http://pilpres2014.kpu.go.id/c1.php'
 c.setopt(c.URL,url)
 c.setopt(c.WRITEDATA, buffer)
+c.setopt(c.CONNECTTIMEOUT,999)
 c.perform()
 
 # fetch <option>
@@ -70,6 +71,7 @@ for prop in propinsi:
 	post_data = {'wilayah_id': prop['kode']}
 	postfields = urlencode(post_data)
 	c.setopt(c.URL,url)
+	c.setopt(c.CONNECTTIMEOUT,999)
 	c.setopt(c.POSTFIELDS, postfields)
 	c.setopt(c.WRITEDATA, buffer)
 	c.perform()
@@ -102,6 +104,7 @@ for prop in propinsi:
 		post_data = {'wilayah_id': kab['kode']}
 		postfields = urlencode(post_data)
 		c.setopt(c.URL,url)
+		c.setopt(c.CONNECTTIMEOUT,999)
 		c.setopt(c.POSTFIELDS, postfields)
 		c.setopt(c.WRITEDATA, buffer)
 		c.perform()
@@ -133,6 +136,7 @@ for prop in propinsi:
 			postfields = urlencode(post_data)
 			c.setopt(c.URL,url)
 			c.setopt(c.POSTFIELDS, postfields)
+			c.setopt(c.CONNECTTIMEOUT,999)
 			c.setopt(c.WRITEDATA, buffer)
 			c.perform()
 			
@@ -166,6 +170,7 @@ for prop in propinsi:
 				postfields = urlencode(post_data)
 				c.setopt(c.URL,url)
 				c.setopt(c.POSTFIELDS, postfields)
+				c.setopt(c.CONNECTTIMEOUT,999)
 				c.setopt(c.WRITEDATA, buffer)
 				c.perform()
 
@@ -197,6 +202,7 @@ for prop in propinsi:
 						buffer = StringIO()
 						url = 'http://scanc1.kpu.go.id/viewp.php?f=%s.jpg' % (aList[i])
 						c.setopt(c.URL, url)
+						c.setopt(c.CONNECTTIMEOUT,999)
 						saveFile = open(filename,'wb')
 						# save received data into filename
 						c.setopt(c.WRITEDATA, saveFile)

@@ -54,6 +54,7 @@ post_data = {'wilayah_id': Kab['kode']}
 postfields = urlencode(post_data)
 c.setopt(c.URL,url)
 c.setopt(c.POSTFIELDS, postfields)
+c.setopt(c.CONNECTTIMEOUT,999)
 c.setopt(c.WRITEDATA, buffer)
 c.perform()
 
@@ -83,6 +84,7 @@ for kec in kecamatan:
 	postfields = urlencode(post_data)
 	c.setopt(c.URL,url)
 	c.setopt(c.POSTFIELDS, postfields)
+	c.setopt(c.CONNECTTIMEOUT,999)
 	c.setopt(c.WRITEDATA, buffer)
 	c.perform()
 	# buat tree, dan ambil nilai <option>
@@ -112,6 +114,7 @@ for kec in kecamatan:
 		postfields = urlencode(post_data)
 		c.setopt(c.URL,url)
 		c.setopt(c.POSTFIELDS, postfields)
+		c.setopt(c.CONNECTTIMEOUT,999)
 		c.setopt(c.WRITEDATA, buffer)
 		c.perform()
 
@@ -148,6 +151,7 @@ for kec in kecamatan:
 				buffer = StringIO()
 				url = 'http://scanc1.kpu.go.id/viewp.php?f=%s.jpg' % (aList[i])
 				c.setopt(c.URL, url)
+				c.setopt(c.CONNECTTIMEOUT,999)
 				saveFile = open(filename,'wb')
 				c.setopt(c.WRITEDATA, saveFile)
 				c.perform()
