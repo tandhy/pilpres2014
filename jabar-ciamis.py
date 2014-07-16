@@ -17,8 +17,15 @@ import time
 # add random function to generate sleep interbal
 import random
 
+
 # set save path.
 savePath = "f:/workspace/pilpres2014"
+# set path for log
+logPath = savePath + "/log"
+logFilename = logPath + "/jabar-ciamis-" + time.strftime("%Y%m%d-%H%M%S") + ".txt"
+# check for log file
+if not os.path.exists(logPath):
+    os.makedirs(logPath)
 
 # set Prov code and name to download specific C1 form.
 Prov = {'kode':'26141', 'nama':'Jawa Barat'} # Propinsi Jawa Barat
@@ -27,6 +34,14 @@ Kab = {'kode':'28573', 'nama':'Ciamis'} # Kabupaten Ciamis
 # variable
 kecamatan = []
 kelurahan = []
+
+# open a log file
+openLogFile = open(logFilename, 'w')
+openLogFile.write("Generated : "  + time.strftime("%m.%d.%Y %H:%M:%S") + "\n" )
+openLogFile.write("========================================\n")
+openLogFile.write("Propinsi : %s\n" % (Prov['nama']) )
+openLogFile.write("\tKabupaten : %s\n" % (Kab['nama']) )
+
 
 # format file c1: tpsKode-[12digit].jpg
 # tapi simpan di folder dan sub folder : Propinsi - Kabupaten - Kecamatan - Kelurahan
@@ -74,6 +89,8 @@ time.sleep(random.randint(3,5)) # random sleep time between 8 - 15 second
 # get kelurahan/desa kode per kecamatan
 for kec in kecamatan:
 	print "\t\tKecamatan : %s" %(kec['nama'])
+	# write to log file
+	openLogFile.write( "\t\tKecamatan : %s\n" %(kec['nama']) )
 	kecamatan = []
 
 	c = pycurl.Curl()
@@ -101,6 +118,8 @@ for kec in kecamatan:
 	# get tps from each kelurahan
 	for kel in kelurahan:
 		print "\t\t\tKelurahan : %s" %(kel['nama'])
+		# write to log file
+		openLogFile.write( "\t\t\tKelurahan : %s\n" %(kel['nama']) )
 		# create folder for kecamatan
 		kecamatanFolder = kabupatenFolder + "/" + kec['nama']
 		if not (os.path.exists(kecamatanFolder)):
@@ -157,11 +176,19 @@ for kec in kecamatan:
 				c.perform()
 
 				print "\t\t\t\t%s -> tps%s-%s-%s.jpg" % (url, int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i])
+				# write to log file
+				openLogFile.write( "\t\t\t\t%s -> tps%s-%s-%s.jpg" % (url, int( aList[i][8:10] ) , tpsKode[ int( aList[i][8:10] ) - 1 ], aList[i]) )
+				# close saveFile
 				saveFile.close()
 				time.sleep(random.randint(3,5)) # random sleep time between 3 - 5 second
 
 		print "\t\t\t\tTotal TPS = %d ; total form C1 = %d\n" % ( len(tpsKode), len(aList))
+		openLogFile.write( "\t\t\t\tTotal TPS = %d ; total form C1 = %d\n" % ( len(tpsKode), len(aList)) )
 
 	print "------------------------------------------------------------------------------"
+	openLogFile.write( "------------------------------------------------------------------------------\n" )
 
+# close c instance
 c.close()
+# close openLogFile instance
+openLogFile.close()
