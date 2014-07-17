@@ -209,7 +209,8 @@ for kec in kecamatan:
 
 			print "\t\t\t\tTotal TPS = %d ; total form C1 = %d\n" % ( len(tpsKode), len(aList))
 			openLogFile.write( "\t\t\t\tTotal TPS = %d ; total form C1 = %d\n" % ( len(tpsKode), len(aList)) )
-			openIDFile.write("%s\n" % (kel['kode']) )
+			if(len(aList) != 0):
+				openIDFile.write("%s\n" % (kel['kode']) )
 		else:
 			print "\t\t\tKelurahan : %s --> done" %(kel['nama'])
 			openLogFile.write( "\t\t\tKelurahan : %s --> done" %(kel['nama']) )
